@@ -1,3 +1,17 @@
+// locals {
+//   tags = merge({
+//     "scrapetorium:environment"          = var.environment,
+//     "scrapetorium:product"              = var.product,
+//     "scrapetorium:owner-name"           = var.owner_name,
+//     "scrapetorium:owner-contact"        = var.owner_contact,
+//     "scrapetorium:runbook-url"          = var.runbook_url,
+//     "scrapetorium:data-classification"  = var.data_classification,
+//     "scrapetorium:cost-center"          = var.cost_center,
+//     "scrapetorium:terraform-path"       = var.terraform_path,
+//     "scrapetorium:terraform"            = true,
+//   }, var.tags)
+// }
+
 module "cloudfront_public" {
   source                    = "./cloudfront_public"
   count                     = var.add_domain ? 1 : 0

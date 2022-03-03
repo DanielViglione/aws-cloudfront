@@ -1,19 +1,37 @@
 locals {
   name_suffix = length(var.name_suffix) > 0 ? "-${var.name_suffix}" : ""
+  // tags = merge(var.custom_tags, {
+  //   "availity:environment"         = var.environment,
+  //   "availity:product"             = var.product,
+  //   "availity:owner-name"          = var.owner_name,
+  //   "availity:owner-contact"       = var.owner_contact,
+  //   "availity:runbook-url"         = var.runbook_url,
+  //   "availity:data-classification" = var.data_classification,
+  //   "availity:cost-center"         = var.cost_center,
+  //   "availity:terraform_path"      = var.terraform_path
+  // })
+}
+
+# cloudfront certificate must be in us-east-1; 
+# hence why we add it in the lambda edge module, which also must be in us-east-1
+data "aws_acm_certificate" "cert_must_be_us_east1" {
+  count     = var.add_domain ? 1 : 0
+  domain    = var.domain
+  statuses  = ["ISSUED"]
 }
 
 resource "aws_lambda_function" "lambda_edge" {
   function_name     = "${var.name_prefix}-sigv4-request-to-s3-role${local.name_suffix}"
   description       = "Sign4 Request to S3 Role"
-  filename          = var.filename
-  source_code_hash  = var.source_code_hash
+  filename          = "${path.module}/../../lambda_edge.zip"
+  source_code_hash  = filebase64sha256("${path.module}/../../lambda_edge.zip")
   runtime           = "nodejs14.x"
   handler           = "index.handler"
   timeout           = var.timeout
   memory_size       = var.memory_size
   role              = aws_iam_role.lambda_edge_execution_role.arn
   publish           = true # important for lambda@edge versioning
-  # tags              = var.tags
+  // tags              = local.tags
 }
 
 resource "aws_cloudwatch_log_group" "lambda_edge_log_group" {
@@ -42,8 +60,8 @@ data "aws_iam_policy_document" "lambda_edge_execution_role" {
 resource "aws_iam_role" "lambda_edge_execution_role" {
   name                  = "${var.name_prefix}-lambda-edge-execution${local.name_suffix}"
   assume_role_policy    = data.aws_iam_policy_document.lambda_edge_execution_role.json
-  # permissions_boundary  = var.permissions_boundary_arn
-  # tags                  = local.tags
+  // permissions_boundary  = var.permissions_boundary_arn
+  // tags                  = local.tags
 }
 
 data "aws_iam_policy" "lambda_edge_execution_role" {
@@ -86,33 +104,3 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
   role                = aws_iam_role.lambda_edge_execution_role.name
   policy_arn          = aws_iam_policy.lambda_edge_execution_role2.arn
 }
-
-// {
-//     "Version": "2012-10-17",
-//     "Statement": [
-//         {
-//             "Effect": "Allow",
-//             "Action": "logs:CreateLogGroup",
-//             "Resource": "arn:aws:logs:us-east-1:xxxx:*"
-//         },
-//         {
-//             "Effect": "Allow",
-//             "Action": [
-//                 "logs:CreateLogStream",
-//                 "logs:PutLogEvents"
-//             ],
-//             "Resource": [
-//                 "arn:aws:logs:us-east-1:xxxxx:log-group:/aws/lambda/CloudFront-security-headers:*"
-//             ]
-//         },
-//         {
-//             "Action": [
-//                 "ssm:GetParameter"
-//             ],
-//             "Resource": [
-//                 "arn:aws:ssm:us-east-1:xxxxx:parameter/web/spa-web-lambda-prod"
-//             ],
-//             "Effect": "Allow"
-//         }
-//     ]
-// }

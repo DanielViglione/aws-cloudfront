@@ -57,3 +57,49 @@ variable "function_qualified_arn" {
 # TAGGING
 # These variables are used in tagging.
 # ---------------------------------------------------------------------------------------------------------------------
+// variable "environment" {
+//   type          = string
+//   description   = "environment"
+// }
+
+// variable "product" {
+//   type          = string
+//   description   = "product"
+// }
+
+// variable "owner_name" {
+//   type          = string
+//   description   = "owner name"
+// }
+
+// variable "owner_contact" {
+//   type          = string
+//   description   = "owner contact"
+// }
+
+// variable "runbook_url" {
+//   type          = string
+//   description   = "runbook url"
+// }
+
+// variable "data_classification" {
+//   type          = string
+//   description   = "data classification"
+// }
+
+// variable "cost_center" {
+//   type          = string
+//   description   = "cost center"
+// }
+
+// variable "terraform_path" {
+//   type        = string
+//   description = "The terraform path this module was deployed from. Typically, use the path_relative_to_include() terragrunt function."
+// }
+
+// variable "tags" {
+//   type        = map(string)
+//   description = "Additional tags to add to all resources."
+//   default     = {}
+// }
+

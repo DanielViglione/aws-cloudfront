@@ -1,3 +1,7 @@
+output "certificate_arn" {
+  value   = var.add_domain ? data.aws_acm_certificate.cert_must_be_us_east1[0].arn : ""
+}
+
 output "lambda_edge_execution_role" {
   value     = aws_iam_role.lambda_edge_execution_role.name
 }

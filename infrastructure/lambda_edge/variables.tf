@@ -8,21 +8,25 @@ variable "name_suffix" {
   description   = "name suffix"
 }
 
+variable "add_domain" {
+  type        = bool
+  description = "add domain"
+}
+
+variable "domain" {
+  type        = string
+  description = "domain"
+}
+
+// variable "permissions_boundary_arn" {
+//   type          = string
+//   description   = "permissions boundary arn"
+// }
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Lambda Edge
 # These variables are used for Lambda Edge.
 # ---------------------------------------------------------------------------------------------------------------------
-
-variable "filename" {
-  type          = string
-  description   = "filename" 
-  default       = "sigv4_request_to_s3_role.zip"
-}
-
-variable "source_code_hash" {
-  type          = string
-  description   = "source code hash"
-}
 
 variable "timeout" {
   type        = number
@@ -36,17 +40,53 @@ variable "memory_size" {
   default     = 128
 }
 
-// variable "permissions_boundary_arn" {
-//   type          = string
-//   description   = "permissions boundary arn"
-// }
-
-// variable "tags" {
-//   type          = string
-//   description   = "tags"
-// }
-
 # ---------------------------------------------------------------------------------------------------------------------
 # TAGGING
 # These variables are used in tagging.
 # ---------------------------------------------------------------------------------------------------------------------
+// variable "environment" {
+//   type        = string 
+//   description = "environment"
+// }
+
+// variable "product" {
+//   type        = string 
+//   description = "product"
+// }
+
+// variable "owner_name" {
+//   type        = string 
+//   description = "owner name"
+// }
+
+// variable "owner_contact" {
+//   type        = string 
+//   description = "owner contact"
+// }
+
+// variable "runbook_url" {
+//   type        = string 
+//   description = "runbook url"
+// }
+
+// variable "data_classification" {
+//   type        = string 
+//   description = "data classification"
+// }
+
+// variable "cost_center" {
+//   type        = string 
+//   description = "cost center"
+// }
+
+// variable "terraform_path" {
+//   type        = string 
+//   description = "terraform path"
+//   default     = ""
+// }
+
+// variable "custom_tags" {
+//   type        = map(string)
+//   description = "custom tags"
+//   default     = {}
+// }

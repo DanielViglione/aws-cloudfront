@@ -126,7 +126,7 @@ resource "aws_cloudfront_distribution" "website_cdn_root" {
     }
   }
 
-  # tags = var.tags
+  // tags = var.tags
 
   lifecycle {
     ignore_changes = [

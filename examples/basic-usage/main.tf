@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      version = "= 3.74.1"
+      source = "hashicorp/aws"
+    }
+  }
+}
+
 provider "aws" {
   # alias    = "primary_region"
   region     = "us-east-1"
@@ -12,12 +21,13 @@ resource "random_pet" "name_suffix" {
   length = 2
 }
 
-############ Static Web Hosting ############
-data "aws_acm_certificate" "cert_must_be_us_east1" {
-  count     = var.add_domain ? 1 : 0
-  domain    = var.certificate_name
-  statuses  = ["ISSUED"]
+############ AWS Bootstrap ############
+# creates vpc, subnets, nacls, etc from account_settings module
+module "bootstrap" {
+  source = "git::git@github.com:Infinite-Limit-Data-Science-LLC/aws-bootstrap.git?ref=v1.1"
 }
+
+############ Static Web Hosting ############
 
 # the cloudfront catalog uses the s3 catalog which enforces SSE-KMS encryption
 # CloudWatch OAI cannot perform KMS decryption with its custom identity. 
@@ -28,9 +38,18 @@ module "lambda_edge" {
   source                    = "../../infrastructure/lambda_edge"
   name_prefix               = var.name
   name_suffix               = var.name_suffix
-  filename                  = "${abspath("../../")}/lambda_edge.zip"
-  source_code_hash          = filebase64sha256("${abspath("../../")}/lambda_edge.zip")
-  # permissions_boundary_arn  = module.account_settings.permissions_boundary_arn
+  add_domain                = var.add_domain
+  domain                    = var.certificate_name
+  // permissions_boundary_arn  = module.account_settings.permissions_boundary_arn
+
+  // environment               = module.account_settings.environment
+  // product                   = module.account_settings.product
+  // owner_name                = module.account_settings.owner_name
+  // owner_contact             = module.account_settings.owner_contact
+  // runbook_url               = module.account_settings.runbook_url
+  // data_classification       = module.account_settings.data_classification
+  // cost_center               = module.account_settings.cost_center
+  // terraform_path            = var.name
 
   providers = {
     aws = "aws"
@@ -39,17 +58,24 @@ module "lambda_edge" {
 
 module "cloudfront_primary" {
   source                    = "../../infrastructure"
-  name_prefix               = var.name
-  name_suffix               = var.name_suffix
   region                    = "us-east-1"
   website_root_bucket       = var.website_root_bucket_primary
   website_logs_bucket       = var.website_logs_bucket_primary
   add_domain                = var.add_domain
   domain_name               = var.domain_name
-  certificate_arn           = data.aws_acm_certificate.cert_must_be_us_east1[0].arn
+  certificate_arn           = module.lambda_edge.certificate_arn
   hosted_zone_name          = var.route53_hosted_zone_name
   lambda_edge_role_arn      = module.lambda_edge.lambda_edge_execution_role_arn
   function_qualified_arn    = module.lambda_edge.function_qualified_arn
+
+  // environment               = module.account_settings.environment
+  // product                   = module.account_settings.product
+  // owner_name                = module.account_settings.owner_name
+  // owner_contact             = module.account_settings.owner_contact
+  // runbook_url               = module.account_settings.runbook_url
+  // data_classification       = module.account_settings.data_classification
+  // cost_center               = module.account_settings.cost_center
+  // terraform_path            = var.name
 
   providers = {
      aws = "aws"
@@ -58,17 +84,24 @@ module "cloudfront_primary" {
 
 module "cloudfront_secondary" {
   source                    = "../../infrastructure"
-  name_prefix               = var.name
-  name_suffix               = var.name_suffix
   region                    = "us-west-2"
   website_root_bucket       = var.website_root_bucket_secondary
   website_logs_bucket       = var.website_logs_bucket_secondary
   add_domain                = var.add_domain
   domain_name               = var.domain_name
-  certificate_arn           = data.aws_acm_certificate.cert_must_be_us_east1[0].arn
+  certificate_arn           = module.lambda_edge.certificate_arn
   hosted_zone_name          = var.route53_hosted_zone_name
   lambda_edge_role_arn      = module.lambda_edge.lambda_edge_execution_role_arn
   function_qualified_arn    = module.lambda_edge.function_qualified_arn
+  
+  // environment               = module.account_settings.environment
+  // product                   = module.account_settings.product
+  // owner_name                = module.account_settings.owner_name
+  // owner_contact             = module.account_settings.owner_contact
+  // runbook_url               = module.account_settings.runbook_url
+  // data_classification       = module.account_settings.data_classification
+  // cost_center               = module.account_settings.cost_center
+  // terraform_path            = var.name
 
   providers = {
      aws = "aws.secondary_region"
