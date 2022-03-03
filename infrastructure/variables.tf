@@ -1,14 +1,3 @@
-variable "name_prefix" {
-  type          = string
-  description   = "name prefix"      
-}
-
-variable "name_suffix" {
-  type          = string
-  description   = "name suffix"
-  default       = ""
-}
-
 variable "region" {
   type          = string
   description   = "region"
