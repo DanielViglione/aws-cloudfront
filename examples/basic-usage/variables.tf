@@ -7,7 +7,7 @@ variable "name_prefix" {
 variable "name_suffix" {
   type          = string
   description   = "name suffix"
-  default       = "sandbox-test2"
+  default       = "sandbox-test"
 }
 
 # bucket dependencies
@@ -47,7 +47,7 @@ variable "add_domain" {
 variable "domain_name" {
   type          = string
   description   = "domain name (applicable if add_domain set to true)"
-  default       = "webclient-sandbox-test2.scrapetorium.com"
+  default       = "webclient-sandbox-test.scrapetorium.com"
 }
 
 variable "certificate_name" {
