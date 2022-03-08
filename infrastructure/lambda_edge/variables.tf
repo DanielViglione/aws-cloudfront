@@ -13,9 +13,9 @@ variable "add_domain" {
   description = "add domain"
 }
 
-variable "domain" {
+variable "certificate_name" {
   type        = string
-  description = "domain"
+  description = "certificate_name"
 }
 
 // variable "permissions_boundary_arn" {
@@ -39,54 +39,3 @@ variable "memory_size" {
   description = "memory size"
   default     = 128
 }
-
-# ---------------------------------------------------------------------------------------------------------------------
-# TAGGING
-# These variables are used in tagging.
-# ---------------------------------------------------------------------------------------------------------------------
-// variable "environment" {
-//   type        = string 
-//   description = "environment"
-// }
-
-// variable "product" {
-//   type        = string 
-//   description = "product"
-// }
-
-// variable "owner_name" {
-//   type        = string 
-//   description = "owner name"
-// }
-
-// variable "owner_contact" {
-//   type        = string 
-//   description = "owner contact"
-// }
-
-// variable "runbook_url" {
-//   type        = string 
-//   description = "runbook url"
-// }
-
-// variable "data_classification" {
-//   type        = string 
-//   description = "data classification"
-// }
-
-// variable "cost_center" {
-//   type        = string 
-//   description = "cost center"
-// }
-
-// variable "terraform_path" {
-//   type        = string 
-//   description = "terraform path"
-//   default     = ""
-// }
-
-// variable "custom_tags" {
-//   type        = map(string)
-//   description = "custom tags"
-//   default     = {}
-// }

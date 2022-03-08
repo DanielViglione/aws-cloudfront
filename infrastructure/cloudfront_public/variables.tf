@@ -1,26 +1,31 @@
-variable "region" {
-  type        = string
-  description = "region"
-}
-
 variable "domain_name" {
   type        = string
   description = "domain name"
 }
 
-variable "certificate_arn" {
+variable "certificate_name" {
   type        = string
-  description = "certificate arn"
+  description = "certificate name"
 }
 
-variable "website_root_bucket" {
+variable "website_root_bucket_primary" {
   type        = string
-  description = "website root bucket"
+  description = "website root bucket primary"
 }
 
-variable "website_logs_bucket" {
+variable "website_logs_bucket_primary" {
   type        = string
-  description = "website logs bucket"
+  description = "website logs bucket primary"
+}
+
+variable "website_root_bucket_secondary" {
+  type        = string
+  description = "website root bucket secondary"
+}
+
+variable "website_logs_bucket_secondary" {
+  type        = string
+  description = "website logs bucket secondary"
 }
 
 variable "lambda_edge_qualified_arn" {

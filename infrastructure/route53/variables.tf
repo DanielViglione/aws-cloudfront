@@ -1,8 +1,3 @@
-variable "region" {
-  type          = string
-  description   = "region"
-}
-
 variable "domain_name" {
   type          = string
   description   = "domain name"

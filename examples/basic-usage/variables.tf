@@ -1,13 +1,13 @@
-variable "name" {
+variable "name_prefix" {
   type          = string
-  description   = "name"      
+  description   = "name prefix"      
   default       = "scrapetorium"
 }
 
 variable "name_suffix" {
   type          = string
   description   = "name suffix"
-  default       = "tst"
+  default       = "sandbox-test2"
 }
 
 # bucket dependencies
@@ -15,25 +15,25 @@ variable "name_suffix" {
 variable "website_root_bucket_primary" {
   type          = string
   description   = "website root (this is the bucket hosting your website)"
-  default       = "scrapetorium-website-react-tst-us-east-1"
+  default       = "scrapetorium-website-react-sandbox-test-us-east-1"
 }
 
 variable "website_logs_bucket_primary" {
   type          = string
   description   = "website root logs (this is the bucket hosting the logs of your website)"
-  default       = "scrapetorium-website-logs-tst-us-east-1"
+  default       = "scrapetorium-website-logs-sandbox-test-us-east-1"
 }
 
 variable "website_root_bucket_secondary" {
   type          = string
   description   = "website root (this is the bucket hosting your website)"
-  default       = "scrapetorium-website-react-tst-us-west-2"
+  default       = "scrapetorium-website-react-sandbox-test-us-west-2"
 }
 
 variable "website_logs_bucket_secondary" {
   type          = string
   description   = "website root logs (this is the bucket hosting the logs of your website)"
-  default       = "scrapetorium-website-logs-tst-us-west-2"
+  default       = "scrapetorium-website-logs-sandbox-test-us-west-2"
 }
 
 ## support public facing domain
@@ -47,7 +47,7 @@ variable "add_domain" {
 variable "domain_name" {
   type          = string
   description   = "domain name (applicable if add_domain set to true)"
-  default       = "webclient.scrapetorium.com"
+  default       = "webclient-sandbox-test2.scrapetorium.com"
 }
 
 variable "certificate_name" {

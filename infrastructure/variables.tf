@@ -1,16 +1,31 @@
-variable "region" {
+variable "name_prefix" {
   type          = string
-  description   = "region"
+  description   = "name prefix"
 }
 
-variable "website_root_bucket" {
+variable "name_suffix" {
   type          = string
-  description   = "website root bucket"
+  description   = "name suffix"
 }
 
-variable "website_logs_bucket" {
+variable "website_root_bucket_primary" {
   type          = string
-  description   = "website root bucket"
+  description   = "website root bucket primary"
+}
+
+variable "website_logs_bucket_primary" {
+  type          = string
+  description   = "website logs bucket primary"
+}
+
+variable "website_root_bucket_secondary" {
+  type          = string
+  description   = "website root bucket secondary"
+}
+
+variable "website_logs_bucket_secondary" {
+  type          = string
+  description   = "website logs bucket secondary"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -28,7 +43,7 @@ variable "domain_name" {
   description   = "domain name"
 }
 
-variable "certificate_arn" {
+variable "certificate_name" {
   type          = string
   description   = "certificate arn"
 }
@@ -36,21 +51,6 @@ variable "certificate_arn" {
 variable "hosted_zone_name" {
   type          = string
   description   = "hosted zone name"
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Lambda Edge
-# These variables are used for Lambda Edge.
-# ---------------------------------------------------------------------------------------------------------------------
-
-variable "lambda_edge_role_arn" {
-  type          = string
-  description   = "lambda edge role arn"
-}
-
-variable "function_qualified_arn" {
-  type          = string
-  description   = "function qualified arn"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

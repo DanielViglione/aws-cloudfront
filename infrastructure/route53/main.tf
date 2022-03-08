@@ -5,7 +5,7 @@ data "aws_route53_zone" "selected" {
 
 resource "aws_route53_record" "record" {
   zone_id                   = data.aws_route53_zone.selected.id
-  name                      = "${var.region}-${var.domain_name}"
+  name                      = var.domain_name
   type                      = "A"
   
   alias {

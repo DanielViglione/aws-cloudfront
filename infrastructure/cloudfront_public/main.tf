@@ -1,9 +1,14 @@
-data "aws_s3_bucket" "website_root" {
-  bucket    = var.website_root_bucket
+data "aws_s3_bucket" "website_logs_primary" {
+  bucket    = var.website_logs_bucket_primary
 }
 
-data "aws_s3_bucket" "website_logs" {
-  bucket    = var.website_logs_bucket
+// data "aws_s3_bucket" "website_logs_secondary" {
+//   bucket    = var.website_logs_bucket_secondary
+// }
+
+data "aws_acm_certificate" "certificate" {
+  domain   = var.certificate_name
+  statuses = ["ISSUED"]
 }
 
 // Instead of exposing your S3 bucket publicly to allow CloudFront to download objects, 
@@ -21,35 +26,50 @@ data "aws_s3_bucket" "website_logs" {
 resource "aws_cloudfront_distribution" "website_cdn_root" {
   enabled                     = true 
   price_class                 = "PriceClass_All"
-  aliases                     = ["${var.region}-${var.domain_name}"] # required if using Route53 domain
+  aliases                     = [var.domain_name] # required if using Route53 domain
 
   origin {
-    origin_id                 = "origin-bucket-${data.aws_s3_bucket.website_root.id}"
+    origin_id                 = "origin-bucket-primary"
     // terraform bucket_regional_domain_name attribute is not pulling the correct domain including the s3 region:
     // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
     // https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
     // protocol://service-code.region-code.amazonaws.com
     // terraform is not pulling in the region-code!!!!
-    domain_name               = "${data.aws_s3_bucket.website_root.bucket}.s3.${var.region}.amazonaws.com"
-    // domain_name               = data.aws_s3_bucket.website_root.bucket_regional_domain_name
+    domain_name               = "${var.website_root_bucket_primary}.s3.us-east-1.amazonaws.com"
+  }
 
-    // specify for Origin Access Identity only
-    // s3_origin_config {
-      // origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
-    // }
+  origin {
+    origin_id                 = "origin-bucket-secondary"
+    domain_name               = "${var.website_root_bucket_secondary}.s3.us-west-2.amazonaws.com"
+  }
+
+  origin_group {
+    origin_id = "groupS3"
+
+    failover_criteria {
+      status_codes = [403, 404, 500, 502, 503, 504]
+    }
+
+    member {
+      origin_id = "origin-bucket-primary"
+    }
+
+    member {
+      # failover bucket
+      origin_id = "origin-bucket-secondary"
+    }
   }
 
   default_root_object         = "index.html"
 
   logging_config {
-    bucket                  = data.aws_s3_bucket.website_logs.bucket_domain_name 
-    # prefix                  = "${var.subdomain}.${data.aws_route53_zone.new.name}/"
+    bucket                  = data.aws_s3_bucket.website_logs_primary.bucket_domain_name 
   }
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "origin-bucket-${data.aws_s3_bucket.website_root.id}"
+    target_origin_id = "groupS3"
     min_ttl          = "0"
     default_ttl      = "300"
     max_ttl          = "1200"
@@ -73,9 +93,10 @@ resource "aws_cloudfront_distribution" "website_cdn_root" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = var.certificate_arn
+    acm_certificate_arn = data.aws_acm_certificate.certificate.arn
     ssl_support_method  = "sni-only"
   }
+
   # viewer_certificate {
   #   cloudfront_default_certificate = true
   # }
@@ -101,7 +122,7 @@ resource "aws_cloudfront_distribution" "website_cdn_root" {
   ordered_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "origin-bucket-${data.aws_s3_bucket.website_root.id}"
+    target_origin_id = "groupS3"
     min_ttl          = "0"
     default_ttl      = "300"
     max_ttl          = "1200"
@@ -135,26 +156,3 @@ resource "aws_cloudfront_distribution" "website_cdn_root" {
     ]
   }
 }
-
-// below configuration is an s3 bucket policy to allow for origin access identity
-// but for kms-encrypted bucket, we will not use origin access identity
-// Also note this policy overwrites the bucket policy provisioned with the s3 bucket
-// in aws-s3 catalog.
-// data "aws_iam_policy_document" "website_root" {
-//     version                             = "2012-10-17"
-
-//     statement {
-//         actions   = ["s3:GetObject"]
-//         resources = ["${data.aws_s3_bucket.website_root.arn}/*"]
-
-//         principals {
-//             type        = "AWS"
-//             identifiers = [aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn]
-//         }
-//     }
-// }
-
-// resource "aws_s3_bucket_policy" "website_root" {
-//     bucket = data.aws_s3_bucket.website_root.id
-//     policy = data.aws_iam_policy_document.website_root.json
-// }

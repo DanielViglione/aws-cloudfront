@@ -13,10 +13,9 @@ locals {
 }
 
 # cloudfront certificate must be in us-east-1; 
-# hence why we add it in the lambda edge module, which also must be in us-east-1
 data "aws_acm_certificate" "cert_must_be_us_east1" {
   count     = var.add_domain ? 1 : 0
-  domain    = var.domain
+  domain    = var.certificate_name
   statuses  = ["ISSUED"]
 }
 
